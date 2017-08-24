@@ -1,0 +1,123 @@
+###########################################
+# Syntax Coloring Map For AdafruitIO
+###########################################
+
+###########################################
+# Datatypes (KEYWORD1)
+###########################################
+
+AdafruitIO  KEYWORD1
+AdafruitIO_Feed KEYWORD1
+AdafruitIO_Dashboard    KEYWORD1
+AdafruitIO_Group    KEYWORD1
+AdafruitIO_Data KEYWORD1
+AdafruitIO_Ethernet KEYWORD1
+AdafruitIO_WiFi KEYWORD1
+AdafruitIO_MQTT KEYWORD1
+AdafruitIO_FONA KEYWORD1
+AdafruitIO_Block    KEYWORD1
+AdafruitIO_Board    KEYWORD1
+
+###########################################
+# Methods and Functions (KEYWORD2)
+###########################################
+
+# AdafruitIO Methods
+connect KEYWORD2
+run KEYWORD2
+feed    KEYWORD2
+group   KEYWORD2
+dashboard   KEYWORD2
+status  KEYWORD2
+statusText  KEYWORD2
+mqttStatus  KEYWORD2
+boardID KEYWORD2
+boardType   KEYWORD2
+version KEYWORD2
+userAgent   KEYWORD2
+
+# AdafruitIO_Dashboard AdafruitIO_Feed
+# and AdafruitIO_Group Methods
+user    KEYWORD2
+io  KEYWORD2
+exists  KEYWORD2
+create  KEYWORD2
+addToggleBlock  KEYWORD2
+addMomentaryBlock   KEYWORD2
+addSliderBlock  KEYWORD2
+addGaugeBlock   KEYWORD2
+addTextBlock    KEYWORD2
+addChartBlock   KEYWORD2
+addColorBlock   KEYWORD2
+addMapBlock KEYWORD2
+addStreamBlock  KEYWORD2
+addImageBlock   KEYWORD2
+
+save    KEYWORD2
+setLocation KEYWORD2
+onMessage   KEYWORD2
+subCallback KEYWORD2
+
+set KEYWORD2
+call    KEYWORD2
+getFeed KEYWORD2
+
+# AdafruitIO_Data Methods
+setCSV  KEYWORD2
+setValue    KEYWORD2
+feedName    KEYWORD2
+value   KEYWORD2
+toChar  KEYWORD2
+toString    KEYWORD2
+toBool  KEYWORD2
+isTrue  KEYWORD2
+isFalse KEYWORD2
+toInt   KEYWORD2
+toPinLevel  KEYWORD2
+toUnsignedInt   KEYWORD2
+toDouble    KEYWORD2
+toFloat KEYWORD2
+toLong  KEYWORD2
+toUnsignedLong  KEYWORD2
+toRed   KEYWORD2
+toGreen KEYWORD2
+toBlue  KEYWORD2
+toNeoPixel  KEYWORD2
+toCSV   KEYWORD2
+charFromDouble  KEYWORD2
+lat KEYWORD2
+lon KEYWORD2
+ele KEYWORD2
+
+# AdafruitIO_Ethernet and AdafruitIO_WiFI
+# Methods
+networkStatus   KEYWORD2
+connectionType  KEYWORD2
+
+###########################################
+# Constants (LITERAL1)
+###########################################
+
+AIO_PING_INTERVAL   LITERAL1
+AIO_PING_INTERVAL   LITERAL1
+AIO_THROTTLE_RECONNECT_INTERVAL LITERAL1
+AIO_ERROR_TOPIC LITERAL1
+AIO_THROTTLE_TOPIC  LITERAL1
+AIO_SSL_FINGERPRINT LITERAL1
+AIO_FEED_NAME_LENGTH    LITERAL1
+AIO_DATA_LENGTH LITERAL1
+AIO_CSV_LENGTH  LITERAL1
+AIO_IDLE    LITERAL1
+AIO_NET_DISCONNECTED    LITERAL1
+AIO_DISCONNECTED    LITERAL1
+AIO_FINGERPRINT_UNKOWN  LITERAL1
+AIO_NET_CONNECT_FAILED  LITERAL1
+AIO_CONNECT_FAILED  LITERAL1
+AIO_FINGERPRINT_INVALID LITERAL1
+AIO_AUTH_FAILED LITERAL1
+AIO_NET_CONNECTED   LITERAL1
+AIO_CONNECTED   LITERAL1
+AIO_CONNECTED_INSECURE  LITERAL1
+AIO_FINGERPRINT_UNSUPPORTED LITERAL1
+AIO_FINGERPRINT_VALID   LITERAL1
+
