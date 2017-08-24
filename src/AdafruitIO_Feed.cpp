@@ -107,38 +107,73 @@ bool AdafruitIO_Feed::exists()
 {
   _io->_http->beginRequest();
   _io->_http->get(_feed_url);
-  _io->_http->sendHeader("X-AIO-Key", _io->_key);
+  //_io->_http->sendHeader("X-AIO-Key", _io->_key);
   _io->_http->endRequest();
 
   int status = _io->_http->responseStatusCode();
-  _io->_http->responseBody(); // needs to be read even if not used
+  String resp = _io->_http->responseBody(); // needs to be read even if not used
+
+// Add debug info
+#ifdef AIO_ERROR
+  AIO_ERR_PRINTLN("AdafruitIO_Feed->exists()")
+  AIO_ERR_PRINT("HTTP GET status code: ")
+  AIO_ERR_PRINTLN(status)
+  AIO_ERR_PRINT("HTTP GET response: ")
+  AIO_ERR_PRINTLN(resp)
+#endif
 
   return status == 200;
 }
 
 bool AdafruitIO_Feed::create()
 {
-  String body = "name=";
+  // Another issue: sending data in the body of POST request
+  // with the content-type "application/x-www-form-urlencoded"
+  // does NOT work in 2.6.0 version instead data encoded to
+  // application/json type is sent successfully
+  // Tests made also with https://io.adafruit.com/api/docs/#!/
+  // Send data with JSON format
+  String body = "{";
+  body += "\"name\":";
+  body += "\"";
   body += name;
+  body += "\"";
+  body += "}";
+
+// Add debug info  
+#ifdef AIO_ERROR
+  AIO_ERR_PRINTLN("AdafruitIO_Feed->create()")
+  AIO_ERR_PRINT("POST body: ")
+  AIO_ERR_PRINTLN(body)
+#endif
 
   _io->_http->beginRequest();
   _io->_http->post(_create_url);
 
-  _io->_http->sendHeader("Content-Type", "application/x-www-form-urlencoded");
+//_io->_http->sendHeader("Content-Type", "application/x-www-form-urlencoded");
+  _io->_http->sendHeader("Content-Type", "application/json");
   _io->_http->sendHeader("Content-Length", body.length());
-  _io->_http->sendHeader("X-AIO-Key", _io->_key);
+//_io->_http->sendHeader("X-AIO-Key", _io->_key);
 
   // the following call to endRequest
   // should be replaced by beginBody once the
   // Arduino HTTP Client Library is updated
-  // _io->_http->beginBody();
-  _io->_http->endRequest();
+  _io->_http->beginBody();
+  //_io->_http->endRequest();
 
   _io->_http->print(body);
   _io->_http->endRequest();
 
   int status = _io->_http->responseStatusCode();
-  _io->_http->responseBody(); // needs to be read even if not used
+  String resp = _io->_http->responseBody(); // needs to be read even if not used
+
+// Add debug info  
+#ifdef AIO_ERROR
+  AIO_ERR_PRINT("HTTP POST status code: ")
+  AIO_ERR_PRINTLN(status)
+  AIO_ERR_PRINT("HTTP POST response: ")
+  AIO_ERR_PRINTLN(resp)
+#endif
 
   return status == 201;
 }
@@ -159,11 +194,32 @@ void AdafruitIO_Feed::subCallback(char *val, uint16_t len)
 
 void AdafruitIO_Feed::_init()
 {
-
+  // Update url creation in order to send the key as parameter of GET request because sending it as an HTTP header seems not work in 
+  // version 2.6.0
+  
   // dynamically allocate memory for mqtt topic and REST URLs
-  _topic = (char *) malloc(sizeof(char) * (strlen(_io->_username) + strlen(name) + 8)); // 8 extra chars for /f/, /csv & null termination
-  _feed_url = (char *) malloc(sizeof(char) * (strlen(_io->_username) + strlen(name) + 16)); // 16 extra for api path & null term
-  _create_url = (char *) malloc(sizeof(char) * (strlen(_io->_username) + 15)); // 15 extra for api path & null term
+  // _topic = (char *) malloc(sizeof(char) * (strlen(_io->_username) + strlen(name) + 8)); // 8 extra chars for /f/, /csv & null termination
+  // _feed_url = (char *) malloc(sizeof(char) * (strlen(_io->_username) + strlen(name) + 16)); // 16 extra for api path & null term
+  // _create_url = (char *) malloc(sizeof(char) * (strlen(_io->_username) + 15)); // 15 extra for api path & null term
+  
+  // New implementation:
+  
+  // 8 extra chars for /f/, /csv & null termination
+  _topic = (char *) malloc(sizeof(char) * (strlen(_io->_username) + strlen(name) + 8));
+  
+  // 27 extra for:
+  // "/api/v2/"     => lenght: 8
+  // "/feeds/"      => lenght: 7
+  // "?x-aio-key="  => lenght: 11
+  // null term      => lenght: 1
+  _feed_url = (char *) malloc(sizeof(char) * (strlen(_io->_username) + strlen(name) + strlen(_io->_key) + 27));
+  
+  // 26 extra for:
+  // "/api/v2/"     => lenght: 8
+  // "/feeds"       => lenght: 6
+  // "?x-aio-key="  => lenght: 11
+  // null term      => lenght: 1
+  _create_url = (char *) malloc(sizeof(char) * (strlen(_io->_username) + strlen(_io->_key) + 26));
 
   // init feed data
   data = new AdafruitIO_Data(this);
@@ -176,16 +232,41 @@ void AdafruitIO_Feed::_init()
     strcat(_topic, name);
     strcat(_topic, "/csv");
 
+// Add debug info
+#ifdef AIO_ERROR
+    AIO_ERR_PRINTLN("AdafruitIO_Feed->_init()")
+    AIO_ERR_PRINT("_topic: ")
+    AIO_ERR_PRINTLN(_topic)
+#endif
+
     // build feed url string
     strcpy(_feed_url, "/api/v2/");
     strcat(_feed_url, _io->_username);
     strcat(_feed_url, "/feeds/");
     strcat(_feed_url, name);
+    // send the key as parameter of GET request
+    strcat(_feed_url, "?x-aio-key=");
+    strcat(_feed_url, _io->_key);
+
+// Add debug info
+#ifdef AIO_ERROR
+    AIO_ERR_PRINT("_feed_url: ")
+    AIO_ERR_PRINTLN(_feed_url)
+#endif
 
     // build create url string
     strcpy(_create_url, "/api/v2/");
     strcat(_create_url, _io->_username);
     strcat(_create_url, "/feeds");
+    // send the key as parameter of GET request
+    strcat(_create_url, "?x-aio-key=");
+    strcat(_create_url, _io->_key);
+
+// Add debug info    
+#ifdef AIO_ERROR
+    AIO_ERR_PRINT("_create_url: ")
+    AIO_ERR_PRINTLN(_create_url)
+#endif
 
     // setup subscription
     _sub = new Adafruit_MQTT_Subscribe(_io->_mqtt, _topic);
@@ -195,6 +276,11 @@ void AdafruitIO_Feed::_init()
     _sub->setCallback(this, &AdafruitIO_MQTT::subCallback);
 
   } else {
+
+// Add debug info  
+#ifdef AIO_ERROR
+    AIO_ERR_PRINT("malloc failed!")
+#endif
 
     // malloc failed
     _topic = 0;

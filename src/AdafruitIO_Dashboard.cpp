@@ -26,14 +26,35 @@ bool AdafruitIO_Dashboard::exists()
   url += _io->_username;
   url += "/dashboards/";
   url += name;
+  // Add the key as parameter of GET request because
+  // sending it as an HTTP header seems not work with
+  // version 2.6.0 (line 43 is commented)
+  // see: https://learn.adafruit.com/adafruit-io/arduino?view=all#send-data
+  url += "?x-aio-key=";
+  url += _io->_key;
+
+// Add debug info
+#ifdef AIO_ERROR
+  AIO_ERR_PRINTLN("AdafruitIO_Dashboard->exists()")
+  AIO_ERR_PRINT("GET url: ")
+  AIO_ERR_PRINTLN(url)
+#endif
 
   _io->_http->beginRequest();
   _io->_http->get(url.c_str());
-  _io->_http->sendHeader("X-AIO-Key", _io->_key);
+//_io->_http->sendHeader("X-AIO-Key", _io->_key);
   _io->_http->endRequest();
 
   int status = _io->_http->responseStatusCode();
-  _io->_http->responseBody(); // needs to be read even if not used
+  String resp = _io->_http->responseBody(); // needs to be read even if not used
+
+// Add debug info 
+#ifdef AIO_ERROR
+  AIO_ERR_PRINT("HTTP GET status code: ")
+  AIO_ERR_PRINTLN(status)
+  AIO_ERR_PRINT("HTTP GET response: ")
+  AIO_ERR_PRINTLN(resp)
+#endif
 
   return status == 200;
 }
@@ -43,28 +64,67 @@ bool AdafruitIO_Dashboard::create()
   String url = "/api/v2/";
   url += _io->_username;
   url += "/dashboards";
+  // Add the key as parameter of GET request because
+  // sending it as an HTTP header seems not work with
+  // version 2.6.0 (line 43 is commented)
+  // see: https://learn.adafruit.com/adafruit-io/arduino?view=all#send-data
+  url += "?x-aio-key=";
+  url += _io->_key;
 
-  String body = "name=";
+// Add debug info
+#ifdef AIO_ERROR
+  AIO_ERR_PRINTLN("AdafruitIO_Dashboard->create()")
+  AIO_ERR_PRINT("POST url: ")
+  AIO_ERR_PRINTLN(url)
+#endif
+
+  // Another issue: sending data in the body of POST request
+  // with the content-type "application/x-www-form-urlencoded"
+  // does NOT work in 2.6.0 version instead data encoded to
+  // application/json type is sent successfully
+  // Tests made also with https://io.adafruit.com/api/docs/#!/
+  // Send data with JSON format
+  String body = "{";
+  body += "\"name\":";
+  body += "\"";
   body += name;
+  body += "\"";
+  body += "}";
+
+// Add debug info
+#ifdef AIO_ERROR
+  AIO_ERR_PRINT("POST body: ")
+  AIO_ERR_PRINTLN(body)
+#endif
 
   _io->_http->beginRequest();
   _io->_http->post(url.c_str());
 
-  _io->_http->sendHeader("Content-Type", "application/x-www-form-urlencoded");
+  // use "application/json" type instead of "application/x-www-form-urlencoded"
+  //_io->_http->sendHeader("Content-Type", "application/x-www-form-urlencoded");
+  _io->_http->sendHeader("Content-Type", "application/json");
   _io->_http->sendHeader("Content-Length", body.length());
-  _io->_http->sendHeader("X-AIO-Key", _io->_key);
+//_io->_http->sendHeader("X-AIO-Key", _io->_key);
 
   // the following call to endRequest
   // should be replaced by beginBody once the
   // Arduino HTTP Client Library is updated
-  // _io->_http->beginBody();
-  _io->_http->endRequest();
+  _io->_http->beginBody();
+  //_io->_http->endRequest();
 
   _io->_http->print(body);
   _io->_http->endRequest();
 
   int status = _io->_http->responseStatusCode();
-  _io->_http->responseBody(); // needs to be read even if not used
+  String resp = _io->_http->responseBody(); // needs to be read even if not used
+
+// Add debug info  
+#ifdef AIO_ERROR
+  AIO_ERR_PRINT("HTTP POST status code: ")
+  AIO_ERR_PRINTLN(status)
+  AIO_ERR_PRINT("HTTP POST response: ")
+  AIO_ERR_PRINTLN(resp)
+#endif
 
   return status == 201;
 }
