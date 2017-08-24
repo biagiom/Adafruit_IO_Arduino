@@ -37,6 +37,11 @@ AdafruitIO_WiFi io(IO_USERNAME, IO_KEY, WIFI_SSID, WIFI_PASS);
 // the AdafruitIO_Ethernet client will work with the following boards:
 //   - Ethernet FeatherWing -> https://www.adafruit.com/products/3201
 
+// By default AdafruitIO_Arduino library include the Ethernet2 library.
+// Uncomment the following line to include the Ethernet Library instead of
+// the Ethernet2 Library
+// #define ETHERNET_LIBRARY
+
 // uncomment the following two lines for ethernet,
 // and comment out the AdafruitIO_WiFi client in the WIFI section
 // #include "AdafruitIO_Ethernet.h"

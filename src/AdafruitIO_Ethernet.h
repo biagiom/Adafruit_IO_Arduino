@@ -17,7 +17,11 @@
 #include "Adafruit_MQTT.h"
 #include "Adafruit_MQTT_Client.h"
 
-#include <Ethernet2.h>
+#ifdef ETHERNET_LIBRARY
+  #include <Ethernet.h>
+#else
+  #include <Ethernet2.h>
+#endif
 #include <EthernetClient.h>
 #include <Dns.h>
 #include <Dhcp.h>
