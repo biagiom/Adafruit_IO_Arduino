@@ -105,6 +105,13 @@ bool AdafruitIO_Feed::save(double value, double lat, double lon, double ele, int
 
 bool AdafruitIO_Feed::exists()
 {
+
+#ifdef AIO_ERROR
+  AIO_ERR_PRINTLN("AdafruitIO_Feed->exists()")
+  AIO_ERR_PRINT("_feed_url: ")
+  AIO_ERR_PRINTLN(_feed_url)
+#endif
+
   _io->_http->beginRequest();
   _io->_http->get(_feed_url);
   //_io->_http->sendHeader("X-AIO-Key", _io->_key);
@@ -115,7 +122,6 @@ bool AdafruitIO_Feed::exists()
 
 // Add debug info
 #ifdef AIO_ERROR
-  AIO_ERR_PRINTLN("AdafruitIO_Feed->exists()")
   AIO_ERR_PRINT("HTTP GET status code: ")
   AIO_ERR_PRINTLN(status)
   AIO_ERR_PRINT("HTTP GET response: ")
@@ -143,6 +149,8 @@ bool AdafruitIO_Feed::create()
 // Add debug info  
 #ifdef AIO_ERROR
   AIO_ERR_PRINTLN("AdafruitIO_Feed->create()")
+  AIO_ERR_PRINT("_create_url: ")
+  AIO_ERR_PRINTLN(_create_url)
   AIO_ERR_PRINT("POST body: ")
   AIO_ERR_PRINTLN(body)
 #endif
@@ -232,8 +240,10 @@ void AdafruitIO_Feed::_init()
     strcat(_topic, name);
     strcat(_topic, "/csv");
 
-// Add debug info
-#ifdef AIO_ERROR
+// Ensure you have already started Serial communication
+// before enabling serial debug otherwise on some Arduino boards
+// you can have issues
+#ifdef SKETCH_DEBUG
     AIO_ERR_PRINTLN("AdafruitIO_Feed->_init()")
     AIO_ERR_PRINT("_topic: ")
     AIO_ERR_PRINTLN(_topic)
@@ -248,12 +258,6 @@ void AdafruitIO_Feed::_init()
     strcat(_feed_url, "?x-aio-key=");
     strcat(_feed_url, _io->_key);
 
-// Add debug info
-#ifdef AIO_ERROR
-    AIO_ERR_PRINT("_feed_url: ")
-    AIO_ERR_PRINTLN(_feed_url)
-#endif
-
     // build create url string
     strcpy(_create_url, "/api/v2/");
     strcat(_create_url, _io->_username);
@@ -261,12 +265,6 @@ void AdafruitIO_Feed::_init()
     // send the key as parameter of GET request
     strcat(_create_url, "?x-aio-key=");
     strcat(_create_url, _io->_key);
-
-// Add debug info    
-#ifdef AIO_ERROR
-    AIO_ERR_PRINT("_create_url: ")
-    AIO_ERR_PRINTLN(_create_url)
-#endif
 
     // setup subscription
     _sub = new Adafruit_MQTT_Subscribe(_io->_mqtt, _topic);
@@ -278,7 +276,7 @@ void AdafruitIO_Feed::_init()
   } else {
 
 // Add debug info  
-#ifdef AIO_ERROR
+#ifdef SKETCH_DEBUG
     AIO_ERR_PRINT("malloc failed!")
 #endif
 

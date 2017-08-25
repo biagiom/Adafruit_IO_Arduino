@@ -18,6 +18,10 @@
 #include "AdafruitIO_Data.h"
 #include "AdafruitIO_MQTT.h"
 
+// uncomment to enable Serial debug but remember to start 
+// Serial communication before enabling Serial debug
+// #define SKETCH_DEBUG
+
 // forward declaration
 class AdafruitIO;
 
