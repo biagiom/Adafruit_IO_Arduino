@@ -78,18 +78,15 @@ bool AdafruitIO_Dashboard::create()
   AIO_ERR_PRINTLN(url)
 #endif
 
-  // Another issue: sending data in the body of POST request
-  // with the content-type "application/x-www-form-urlencoded"
-  // does NOT work in 2.6.0 version instead data encoded to
-  // application/json type is sent successfully
-  // Tests made also with https://io.adafruit.com/api/docs/#!/
   // Send data with JSON format
-  String body = "{";
-  body += "\"name\":";
-  body += "\"";
+  // String body = "{";
+  // body += "\"name\":";
+  // body += "\"";
+  // body += name;
+  // body += "\"";
+  // body += "}";
+  String body = "name=";
   body += name;
-  body += "\"";
-  body += "}";
 
 // Add debug info
 #ifdef AIO_ERROR
@@ -101,10 +98,10 @@ bool AdafruitIO_Dashboard::create()
   _io->_http->post(url.c_str());
 
   // use "application/json" type instead of "application/x-www-form-urlencoded"
-  //_io->_http->sendHeader("Content-Type", "application/x-www-form-urlencoded");
-  _io->_http->sendHeader("Content-Type", "application/json");
+  _io->_http->sendHeader("Content-Type", "application/x-www-form-urlencoded");
+  //_io->_http->sendHeader("Content-Type", "application/json");
   _io->_http->sendHeader("Content-Length", body.length());
-//_io->_http->sendHeader("X-AIO-Key", _io->_key);
+  //_io->_http->sendHeader("X-AIO-Key", _io->_key);
 
   // the following call to endRequest
   // should be replaced by beginBody once the

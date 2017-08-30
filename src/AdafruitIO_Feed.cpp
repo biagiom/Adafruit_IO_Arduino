@@ -133,18 +133,15 @@ bool AdafruitIO_Feed::exists()
 
 bool AdafruitIO_Feed::create()
 {
-  // Another issue: sending data in the body of POST request
-  // with the content-type "application/x-www-form-urlencoded"
-  // does NOT work in 2.6.0 version instead data encoded to
-  // application/json type is sent successfully
-  // Tests made also with https://io.adafruit.com/api/docs/#!/
   // Send data with JSON format
-  String body = "{";
-  body += "\"name\":";
-  body += "\"";
+  // String body = "{";
+  // body += "\"name\":";
+  // body += "\"";
+  // body += name;
+  // body += "\"";
+  // body += "}";
+  String body = "name=";
   body += name;
-  body += "\"";
-  body += "}";
 
 // Add debug info  
 #ifdef AIO_ERROR
@@ -158,8 +155,8 @@ bool AdafruitIO_Feed::create()
   _io->_http->beginRequest();
   _io->_http->post(_create_url);
 
-//_io->_http->sendHeader("Content-Type", "application/x-www-form-urlencoded");
-  _io->_http->sendHeader("Content-Type", "application/json");
+  _io->_http->sendHeader("Content-Type", "application/x-www-form-urlencoded");
+//_io->_http->sendHeader("Content-Type", "application/json");
   _io->_http->sendHeader("Content-Length", body.length());
 //_io->_http->sendHeader("X-AIO-Key", _io->_key);
 
