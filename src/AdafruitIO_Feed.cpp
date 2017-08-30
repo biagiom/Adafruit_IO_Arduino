@@ -114,7 +114,7 @@ bool AdafruitIO_Feed::exists()
 
   _io->_http->beginRequest();
   _io->_http->get(_feed_url);
-  //_io->_http->sendHeader("X-AIO-Key", _io->_key);
+  _io->_http->sendHeader("X-AIO-Key", _io->_key);
   _io->_http->endRequest();
 
   int status = _io->_http->responseStatusCode();
@@ -158,7 +158,7 @@ bool AdafruitIO_Feed::create()
   _io->_http->sendHeader("Content-Type", "application/x-www-form-urlencoded");
 //_io->_http->sendHeader("Content-Type", "application/json");
   _io->_http->sendHeader("Content-Length", body.length());
-//_io->_http->sendHeader("X-AIO-Key", _io->_key);
+  _io->_http->sendHeader("X-AIO-Key", _io->_key);
 
   // the following call to endRequest
   // should be replaced by beginBody once the
@@ -203,28 +203,28 @@ void AdafruitIO_Feed::_init()
   // version 2.6.0
   
   // dynamically allocate memory for mqtt topic and REST URLs
-  // _topic = (char *) malloc(sizeof(char) * (strlen(_io->_username) + strlen(name) + 8)); // 8 extra chars for /f/, /csv & null termination
-  // _feed_url = (char *) malloc(sizeof(char) * (strlen(_io->_username) + strlen(name) + 16)); // 16 extra for api path & null term
-  // _create_url = (char *) malloc(sizeof(char) * (strlen(_io->_username) + 15)); // 15 extra for api path & null term
+  _topic = (char *) malloc(sizeof(char) * (strlen(_io->_username) + strlen(name) + 8)); // 8 extra chars for /f/, /csv & null termination
+  _feed_url = (char *) malloc(sizeof(char) * (strlen(_io->_username) + strlen(name) + 16)); // 16 extra for api path & null term
+  _create_url = (char *) malloc(sizeof(char) * (strlen(_io->_username) + 15)); // 15 extra for api path & null term
   
   // New implementation:
   
   // 8 extra chars for /f/, /csv & null termination
-  _topic = (char *) malloc(sizeof(char) * (strlen(_io->_username) + strlen(name) + 8));
+  // _topic = (char *) malloc(sizeof(char) * (strlen(_io->_username) + strlen(name) + 8));
   
   // 27 extra for:
   // "/api/v2/"     => lenght: 8
   // "/feeds/"      => lenght: 7
   // "?x-aio-key="  => lenght: 11
   // null term      => lenght: 1
-  _feed_url = (char *) malloc(sizeof(char) * (strlen(_io->_username) + strlen(name) + strlen(_io->_key) + 27));
+  // _feed_url = (char *) malloc(sizeof(char) * (strlen(_io->_username) + strlen(name) + strlen(_io->_key) + 27));
   
   // 26 extra for:
   // "/api/v2/"     => lenght: 8
   // "/feeds"       => lenght: 6
   // "?x-aio-key="  => lenght: 11
   // null term      => lenght: 1
-  _create_url = (char *) malloc(sizeof(char) * (strlen(_io->_username) + strlen(_io->_key) + 26));
+  // _create_url = (char *) malloc(sizeof(char) * (strlen(_io->_username) + strlen(_io->_key) + 26));
 
   // init feed data
   data = new AdafruitIO_Data(this);
@@ -251,17 +251,11 @@ void AdafruitIO_Feed::_init()
     strcat(_feed_url, _io->_username);
     strcat(_feed_url, "/feeds/");
     strcat(_feed_url, name);
-    // send the key as parameter of GET request
-    strcat(_feed_url, "?x-aio-key=");
-    strcat(_feed_url, _io->_key);
 
     // build create url string
     strcpy(_create_url, "/api/v2/");
     strcat(_create_url, _io->_username);
     strcat(_create_url, "/feeds");
-    // send the key as parameter of GET request
-    strcat(_create_url, "?x-aio-key=");
-    strcat(_create_url, _io->_key);
 
     // setup subscription
     _sub = new Adafruit_MQTT_Subscribe(_io->_mqtt, _topic);

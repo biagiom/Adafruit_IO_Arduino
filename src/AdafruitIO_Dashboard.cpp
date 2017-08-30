@@ -26,12 +26,6 @@ bool AdafruitIO_Dashboard::exists()
   url += _io->_username;
   url += "/dashboards/";
   url += name;
-  // Add the key as parameter of GET request because
-  // sending it as an HTTP header seems not work with
-  // version 2.6.0 (line 43 is commented)
-  // see: https://learn.adafruit.com/adafruit-io/arduino?view=all#send-data
-  url += "?x-aio-key=";
-  url += _io->_key;
 
 // Add debug info
 #ifdef AIO_ERROR
@@ -42,7 +36,7 @@ bool AdafruitIO_Dashboard::exists()
 
   _io->_http->beginRequest();
   _io->_http->get(url.c_str());
-//_io->_http->sendHeader("X-AIO-Key", _io->_key);
+  _io->_http->sendHeader("X-AIO-Key", _io->_key);
   _io->_http->endRequest();
 
   int status = _io->_http->responseStatusCode();
@@ -64,12 +58,6 @@ bool AdafruitIO_Dashboard::create()
   String url = "/api/v2/";
   url += _io->_username;
   url += "/dashboards";
-  // Add the key as parameter of GET request because
-  // sending it as an HTTP header seems not work with
-  // version 2.6.0 (line 43 is commented)
-  // see: https://learn.adafruit.com/adafruit-io/arduino?view=all#send-data
-  url += "?x-aio-key=";
-  url += _io->_key;
 
 // Add debug info
 #ifdef AIO_ERROR
