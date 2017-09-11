@@ -85,11 +85,12 @@ bool AdafruitIO_Dashboard::create()
   _io->_http->beginRequest();
   _io->_http->post(url.c_str());
 
-  // use "application/json" type instead of "application/x-www-form-urlencoded"
+  // choose the MIME type of the data you want to send. Two types are allowed:
+  // "application/json" or "application/x-www-form-urlencoded"
   _io->_http->sendHeader("Content-Type", "application/x-www-form-urlencoded");
   //_io->_http->sendHeader("Content-Type", "application/json");
   _io->_http->sendHeader("Content-Length", body.length());
-  //_io->_http->sendHeader("X-AIO-Key", _io->_key);
+  _io->_http->sendHeader("X-AIO-Key", _io->_key);
 
   // the following call to endRequest
   // should be replaced by beginBody once the
